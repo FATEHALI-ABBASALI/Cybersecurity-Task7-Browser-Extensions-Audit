@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Task 7 — Browser Extensions Audit Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; line-height: 1.4; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f2f2f2; }
+    pre { background: #fafafa; padding: 10px; border: 1px solid #eee; overflow-x: auto; }
+    h1 { color: #222; }
+    h3 { color: #444; }
+  </style>
+</head>
+<body>
+  <h1>Task 7 — Browser Extensions Audit Report</h1>
+  <p>This report documents a security audit of installed browser extensions, focusing on permissions, developer reputation, and potential privacy risks. Include actual screenshots into the <strong>evidence/</strong> folder and update the CSV with real findings.</p>
+
+  <h3>Summary</h3>
+  <p>The audit identifies extensions with broad permissions or suspicious behavior. This package contains steps to inspect, flags to look for, and remediation actions. Follow the instructions to reproduce and document your findings.</p>
+
+  <h3>Audit Steps</h3>
+  <p>Open <code>chrome://extensions/</code>, enable Developer mode, and inspect each extension details. Review permissions, host access, background scripts, and store page.</p>
+
+  <h3>Command Snippets</h3>
+  <pre>
+# PowerShell: list Chrome extensions folder names and manifest names
+$extDir = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Extensions"
+Get-ChildItem $extDir -Directory | ForEach-Object {
+  $id = $_.Name
+  $latest = Get-ChildItem $_.FullName -Directory | Sort-Object Name -Descending | Select-Object -First 1
+  $manifest = Join-Path $latest.FullName 'manifest.json'
+  $name = if (Test-Path $manifest) { (Get-Content $manifest -Raw | ConvertFrom-Json).name } else { 'Unknown' }
+  Write-Output "$id - $name - $latest"
+}
+  </pre>
+
+  <h3>Flagged Extensions</h3>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>ID (partial)</th><th>Risk</th><th>Reason</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>LinkedIn Auto-Connect</td><td>dcjimifcoocdj...</td><td>High</td><td>Automates actions; excessive permissions</td><td>Removed</td></tr>
+      <tr><td>Awesome Screen Recorder & Screenshot</td><td>nlipoenfbbik...</td><td>Medium</td><td>Screen capture + broad access</td><td>Disabled</td></tr>
+      <tr><td>Google Docs Offline</td><td>ghbmnnjooekp...</td><td>Low</td><td>Official Google extension</td><td>Kept</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Evidence</h3>
+  <p>Place screenshots inside the <code>evidence/</code> folder. Recommended filenames:</p>
+  <pre>
+evidence/01_extensions_list_before.png
+evidence/02_removed_LinkedIn_AutoConnect.png
+evidence/03_extensions_list_after.png
+  </pre>
+
+  <h3>Recommendations</h3>
+  <p>Only install trusted extensions, review permissions, and periodically audit installed extensions. Change passwords and enable 2FA if an extension had access to sensitive sites.</p>
+</body>
+</html>
